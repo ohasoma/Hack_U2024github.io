@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hack_U2024ゲームロビー</title>
+    <style>
+      body {
+        text-align: center;
+        font-family: "游ゴシック";
+      }
+
+      #startbtn,
+      #todaybtn,
+      #weekbtn {
+        position: relative;
+        color: white; /* 文字色 */
+        text-align: center; /* 文字のアライメント */
+        text-decoration: none; /* 文字装飾 */
+        display: inline-block; /* ボタンの表示方法 */
+        font-size: 32px; /* フォントサイズ */
+        font-family: "游ゴシック"; /* フォント */
+        margin: 4px 14px; /* 外側の余白 */
+        cursor: pointer; /* カーソル */
+        border: none; /* ボーダーなし */
+        border-radius: 10px; /* ボタンの角丸 */
+        box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.3); /* 影 */
+      }
+
+      /*フレーム*/
+      @keyframes gradient {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      #startbtn,
+      #todaybtn,
+      #weekbtn {
+        /*グラデーションの色*/
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 600% 600%;
+        animation: gradient 20s ease infinite; /*アニメーションの速さ  infinite=>無限に繰り返す*/
+      }
+
+      /*ボタンの大きさ*/
+      #todaybtn,
+      #weekbtn {
+        width: 300px; /*横幅*/
+        height: 150px; /*高さ*/
+      }
+      #startbtn {
+        width: 628px; /*横幅*/
+        height: 150px; /*高さ*/
+      }
+
+      /*カーソルが重なったときサイズを少し大きくするする*/
+      #startbtn:hover {
+        transform: scale(1.03, 1.03);
+      }
+      #todaybtn:hover {
+        transform: scale(1.03, 1.03);
+      }
+      #weekbtn:hover {
+        transform: scale(1.03, 1.03);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>「ゲーム名」</h1>
+    <p id="username">「ユーザー名」</p>
+    <p id="time"></p>
+    <div class="gradation">
+      <p><button id="startbtn">勉強を始める</button></p>
+      <p>
+        <button id="todaybtn">今日の実績</button
+        ><button id="weekbtn">今週の実績</button>
+      </p>
+    </div>
+  </body>
+  <script>
+    //要素取得
+    const startbtn = document.getElementById("startbtn");
+    const todaybtn = document.getElementById("todaybtn");
+    const weekbtn = document.getElementById("weekbtn");
+    const username = document.getElementById("username");
+    const time = document.getElementById("time");
+
+    //ハッシュ地を取得
+    const params = new URLSearchParams(window.location.search);
+    const studytime = params.get("studytime");
+    const myname = params.get("myname");
+    time.innerHTML = studytime;
+    username.innerHTML = myname;
+
+    //メイン画面に移動
+    function gamestart() {
+      window.location.href = `http://localhost/Hack_U2024_gamemain.html?studytime=${studytime}&myname=${myname}`; //※仮のページ
+    }
+
+    startbtn.addEventListener("click", gamestart);
+  </script>
+</html>
