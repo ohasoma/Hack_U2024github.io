@@ -10,7 +10,7 @@
       }
 
       #startbtn,
-      #todaybtn,
+      #rankingbtn,
       #weekbtn {
         position: relative;
         color: white; /* 文字色 */
@@ -40,7 +40,7 @@
       }
 
       #startbtn,
-      #todaybtn,
+      #rankingbtn,
       #weekbtn {
         /*グラデーションの色*/
         background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
@@ -49,7 +49,7 @@
       }
 
       /*ボタンの大きさ*/
-      #todaybtn,
+      #rankingbtn,
       #weekbtn {
         width: 300px; /*横幅*/
         height: 150px; /*高さ*/
@@ -63,7 +63,7 @@
       #startbtn:hover {
         transform: scale(1.03, 1.03);
       }
-      #todaybtn:hover {
+      #rankingbtn:hover {
         transform: scale(1.03, 1.03);
       }
       #weekbtn:hover {
@@ -78,7 +78,7 @@
     <div class="gradation">
       <p><button id="startbtn">勉強を始める</button></p>
       <p>
-        <button id="todaybtn">今日の実績</button
+        <button id="rankingbtn">ランキング</button
         ><button id="weekbtn">今週の実績</button>
       </p>
     </div>
@@ -86,7 +86,7 @@
   <script>
     //要素取得
     const startbtn = document.getElementById("startbtn");
-    const todaybtn = document.getElementById("todaybtn");
+    const rankingbtn = document.getElementById("rankingbtn");
     const weekbtn = document.getElementById("weekbtn");
     const username = document.getElementById("username");
     const time = document.getElementById("time");
