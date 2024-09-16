@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hack_U2024新規</title>
+    <style>
+      body {
+        text-align: center;
+        font-family: "游ゴシック";
+      }
+
+      h1 {
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 600% 600%;
+        animation: gradient 20s ease infinite; /*アニメーションの速さ  infinite=>無限に繰り返す*/
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      #tell {
+        color: red;
+      }
+
+      #write {
+        padding: 30px;
+        border: 1px solid black;
+        width: 20%;
+        margin: auto;
+      }
+
+      #checknewuser {
+        color: white;
+        /*グラデーションの色*/
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 600% 600%;
+        animation: gradient 20s ease infinite; /*アニメーションの速さ  infinite=>無限に繰り返す*/
+        font-size: 150%;
+      }
+
+      /*フレーム*/
+      @keyframes gradient {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      #checkbtn,
+      #returnbtn,
+      #okbtn {
+        background-color: white;
+        border-radius: 5px; /* ボタンの角丸 */
+        border: 1px solid, black;
+        font-family: "游ゴシック";
+        width: 75px; /*幅*/
+        height: 30px; /*高さ*/
+      }
+      /*カーソルが重なったときサイズを少し大きくするする*/
+      #checkbtn:hover {
+        transform: scale(1.1, 1.1);
+      }
+      #returnbtn:hover {
+        transform: scale(1.1, 1.1);
+      }
+      #okbtn:hover {
+        transform: scale(1.1, 1.1);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>「ゲーム名」</h1>
+
+    <p>ゲームで使用するユーザー名とパスワードを設定してください</p>
+    <form action="http://api/register" method="post">
+      <div id="write">
+        <p>ユーザー名</p>
+        <input
+          type="text"
+          name="newusername"
+          id="newmynametxt"
+          placeholder="username"
+        />
+
+        <p>パスワード</p>
+        <input
+          type="text"
+          name="newuserpassword"
+          id="newmypasswordtxt"
+          placeholder="Password"
+        />
+      </div>
+
+      <dialog id="checknewuser">
+        <p>この内容でアカウントを作成します</p>
+        <p id="username"></p>
+        <p id="password"></p>
+
+        <p>
+          <button type="submit" id="checkbtn">作成</button>　　　<button
+            id="returnbtn"
+          >
+            戻る
+          </button>
+        </p>
+      </dialog>
+    </form>
+    <p>
+      <button id="okbtn">決定</button>
+    </p>
+    <p id="tell"></p>
+  </body>
+  <script>
+    //要素取得
+    const newmyname = document.getElementById("newmynametxt");
+    const newmypassword = document.getElementById("newmypasswordtxt");
+    const okbtn = document.getElementById("okbtn");
+    const tell = document.getElementById("tell");
+
+    //ダイアログ内の要素を取得
+    const checknewuser = document.getElementById("checknewuser");
+    const username = document.getElementById("username");
+    const password = document.getElementById("password");
+    const checkbtn = document.getElementById("checkbtn");
+    const returnbtn = document.getElementById("returnbtn");
+
+    //ダイアログを表示する関数
+    function showdialog() {
+      if (newmyname.value == 0) {
+        tell.innerHTML = "ユーザー名を入力してください";
+      } else if (newmypassword.value == 0) {
+        tell.innerHTML = "パスワードを入力してください";
+      } else {
+        username.innerHTML = "ユーザー名　" + newmyname.value;
+        password.innerHTML = "パスワード　" + newmypassword.value;
+        checknewuser.showModal();
+      }
+    }
+
+    //ゲーム画面に飛ぶ関数
+    function allcheck() {
+      location.href = "http://localhost/Hack_U2024_gamelobby.html"; //※このページは仮
+    }
+
+    //ダイアログを閉じる関数
+    function closedialog() {
+      checknewuser.close();
+      location.assign(`http://localhost/Hack_U2024_gamelobby.html#${username}`);
+    }
+
+    //クリックイベント
+    okbtn.addEventListener("click", showdialog);
+    checkbtn.addEventListener("click", closedialog);
+    returnbtn.addEventListener("click", closedialog);
+
+    /*http通信
+    function post() {
+      checknewuser.close();
+      let body = newmyname.value + newmypassword.value;
+
+      fetch("http://api/register", {
+        method: "POST",
+        body: body,
+      })
+        .then((response) => {
+          if (!response.ok) {
+            console.log("error!");
+          }
+          console.log("ok!");
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }*/
+  </script>
+</html>
