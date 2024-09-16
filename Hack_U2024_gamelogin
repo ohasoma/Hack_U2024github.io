@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hack_U2024ログイン</title>
+    <style>
+      body {
+        text-align: center;
+        font-family: "游ゴシック";
+      }
+      #newbtn {
+        color: blue;
+      }
+
+      h1 {
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 600% 600%;
+        animation: gradient 20s ease infinite; /*アニメーションの速さ  infinite=>無限に繰り返す*/
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      /*フレーム*/
+      @keyframes gradient {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>「ゲーム名」</h1>
+
+    <!--<form action="http://api/account" method="get">-->
+    <p>ユーザー名とパスワードを入力してください</p>
+
+    <p>ユーザー名</p>
+    <input type="text" name="username" id="mynametxt" placeholder="username" />
+
+    <p>パスワード</p>
+    <input
+      type="text"
+      name="userpassword"
+      id="mypasswordtxt"
+      placeholder="password"
+    />
+    <p><button type="submit" id="mypasswordbtn">認証</button></p>
+    <!--</form>-->
+
+    <p><button id="newbtn">初めての方はこちら</button></p>
+  </body>
+  <script>
+    //要素取得
+    const mynametxt = document.getElementById("mynametxt");
+    const mypassword = document.getElementById("mypasswordtxt");
+    const mypasswordbtn = document.getElementById("mypasswordbtn");
+    const newbtn = document.getElementById("newbtn");
+
+    //ゲーム画面に飛ぶ関数
+    function checkpassword() {
+      const myname = mynametxt.value;
+      window.location.href = `http://localhost/Hack_U2024_gamelobby.html?myname=${myname}`;
+    }
+
+    //新規ユーザーのページに飛ぶ関数
+    function newuser() {
+      location.href = "http://localhost/Hack_U2024_gameRegistration.html"; //※仮のページ
+    }
+
+    //クリックイベント
+    mypasswordbtn.addEventListener("click", checkpassword);
+    newbtn.addEventListener("click", newuser);
+  </script>
+</html>
