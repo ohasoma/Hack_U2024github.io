@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hack_U2024メインゲーム画面</title>
+
+    <style>
+      body {
+        text-align: center;
+        font-family: "游ゴシック";
+      }
+
+      #time {
+        font-size: 50px;
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 600% 600%;
+        animation: gradient 20s ease infinite; /*アニメーションの速さ  infinite=>無限に繰り返す*/
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      #finishdialog {
+        color: white;
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 600% 600%;
+        animation: gradient 20s ease infinite; /*アニメーションの速さ  infinite=>無限に繰り返す*/
+        font-size: 150%;
+        border-radius: 75px; /*丸角*/
+      }
+
+      /*フレーム*/
+      @keyframes gradient {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      #alltimetxt {
+        font-size: 150%;
+      }
+
+      #startbtn,
+      #stopbtn,
+      #finishbtn {
+        width: 130px; /*幅*/
+        height: 60px; /*高さ*/
+        border-radius: 50px; /*丸角*/
+        border: 1px solid black;
+        font-family: "游ゴシック";
+        font-size: 130%;
+        box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.3); /* 影 */
+      }
+
+      #allfinishbtn,
+      #returnbtn {
+        width: 400px; /*幅*/
+        height: 50px; /*高さ*/
+        border-radius: 20px;
+        font-family: "游ゴシック";
+        font-size: 100%;
+        border: 1px solid black;
+      }
+
+      #startbtn:hover {
+        transform: scale(1.1, 1.1);
+      }
+      #startbtn {
+        border: 3px solid#e73c7e;
+      }
+
+      #stopbtn:hover {
+        transform: scale(1.1, 1.1);
+      }
+      #stopbtn {
+        border: 3px solid#23a6d5;
+      }
+
+      #finishbtn:hover {
+        transform: scale(1.1, 1.1);
+      }
+      #finishbtn {
+        border: 3px solid rgba(208, 0, 255, 0.712);
+      }
+
+      #allfinishbtn:hover {
+        transform: scale(1.1, 1.1);
+      }
+
+      #returnbtn:hover {
+        transform: scale(1.1, 1.1);
+      }
+    </style>
+  </head>
+  <body>
+    <p>
+      <button id="startbtn">スタート</button>　　　
+      <button id="stopbtn">ストップ</button>　　　
+      <button id="finishbtn">終了する</button>
+    </p>
+    <p id="time">00:00:00</p>
+
+    <!--AIに聞いたやつ-->
+    <video id="video" width="320" height="240" autoplay></video>
+    <canvas id="canvas" width="320" height="240"></canvas>
+
+    <dialog id="finishdialog">
+      <p>今回の勉強時間は<span id="alltimetxt"></span>です！</p>
+      <p>勉強を終了してロビーへ戻りますか？</p>
+      <p>
+        <button id="allfinishbtn">勉強を終わる</button>
+      </p>
+      <p>
+        <button id="returnbtn">まだ勉強を続ける</button>
+      </p>
+    </dialog>
+  </body>
+  <script>
+    const startbtn = document.getElementById("startbtn");
+    const stopbtn = document.getElementById("stopbtn");
+    const time = document.getElementById("time");
+    const finishbtn = document.getElementById("finishbtn");
+
+    //ダイアログの要素取得
+    const finishdialog = document.getElementById("finishdialog");
+    const alltimetxt = document.getElementById("alltimetxt");
+    const allfinishbtn = document.getElementById("allfinishbtn");
+    const returnbtn = document.getElementById("returnbtn");
+
+    // 開始時間
+    let startTime;
+    // 停止時間
+    let stopTime = 0;
+    // タイムアウトID
+    let timeoutID;
+
+    // 時間を表示する関数
+    let h = 0; //時
+    let m = 0; //分
+    let s = 0; //秒
+
+    function displayTime() {
+      const currentTime = new Date(Date.now() - startTime + stopTime);
+      h = String(currentTime.getHours() - 9).padStart(2, "0");
+      m = String(currentTime.getMinutes()).padStart(2, "0");
+      s = String(currentTime.getSeconds()).padStart(2, "0");
+      time.innerHTML = `${h}:${m}:${s}`;
+      timeoutID = setTimeout(displayTime, 10);
+    }
+
+    //タイマーが0の時はスタートボタン以外は押せない
+
+    window.onload = function () {
+      if (h == 0 && m == 0 && s == 0) {
+        startbtn.disabled = false;
+        stopbtn.disabled = true;
+        finishbtn.disabled = true;
+      }
+    };
+
+    // スタートボタンがクリックされたら時間を進める
+    let intervalID;
+    startbtn.addEventListener("click", () => {
+      startbtn.disabled = true;
+      stopbtn.disabled = false;
+      finishbtn.disabled = false;
+      startTime = Date.now();
+      displayTime();
+      if (!intervalID) {
+        intervalId = setInterval(snapimg, 10000);
+      }
+    });
+
+    // ストップボタンがクリックされたら時間を止める
+    stopbtn.addEventListener("click", function () {
+      startbtn.disabled = false;
+      stopbtn.disabled = true;
+      finishbtn.disabled = true;
+      clearTimeout(timeoutID);
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+      stopTime += Date.now() - startTime;
+    });
+
+    //終了ボタンがクリックされたら時間を止めてダイアログを表示
+    finishbtn.addEventListener("click", function () {
+      startbtn.disabled = false;
+      stopbtn.disabled = true;
+      clearTimeout(timeoutID);
+      stopTime += Date.now() - startTime;
+      showdialog();
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+    });
+
+    //ハッシュ値を取得
+    const params = new URLSearchParams(window.location.search);
+    const myname = params.get("myname");
+    const studytime = params.get("studytime");
+
+    //勉強を終わるボタンがクリックされた時の関数
+    allfinishbtn.addEventListener("click", function () {
+      const studytime = `${h}:${m}:${s}`; //時間取得
+      //ハッシュ値を付けてページを遷移
+      window.location.href = `http://localhost/Hack_U2024_gamelobby.html?studytime=${studytime}&myname=${myname}`;
+    });
+
+    //戻るボタンがクリックされた時の関数
+    returnbtn.addEventListener("click", closedialog);
+
+    //ダイアログを開く関数
+    function showdialog() {
+      alltimetxt.innerHTML = `${h}:${m}:${s}`;
+      finishdialog.showModal();
+    }
+
+    //ダイアログを閉じる関数
+    function closedialog() {
+      finishdialog.close();
+    }
+
+    //AIに聞いたやつ
+    // カメラを起動
+    const video = document.getElementById("video");
+
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then((stream) => {
+        video.srcObject = stream;
+      })
+      .catch((err) => {
+        console.error("カメラの起動に失敗しました: ", err);
+      });
+
+    // 画像をキャプチャ
+    const canvas = document.getElementById("canvas");
+    const context = canvas.getContext("2d");
+
+    //1分ごとに画像を送信する関数
+    function snapimg() {
+      context.drawImage(video, 0, 0, 320, 240);
+      const dataURL = canvas.toDataURL("image/png"); //dataURLに画像データが代入
+
+      // 画像をサーバーに送信
+      fetch("YOUR_SERVER_URL", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ image: dataURL }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("成功:", data);
+        })
+        .catch((error) => {
+          console.error("エラー:", error);
+        });
+    }
+  </script>
+</html>
