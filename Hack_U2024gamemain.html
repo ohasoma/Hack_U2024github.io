@@ -96,6 +96,12 @@
       #returnbtn:hover {
         transform: scale(1.1, 1.1);
       }
+      
+      #gameCanvas {
+        background: #87ceeb; /* 空の色 */
+        display: block;
+        margin: 0 auto;
+      }
     </style>
   </head>
   <body>
@@ -108,7 +114,8 @@
 
     <!--AIに聞いたやつ-->
     <video id="video" width="320" height="240" autoplay></video>
-    <canvas id="canvas" width="320" height="240"></canvas>
+    <canvas id="canvas1" width="320" height="240"></canvas>
+    <canvas id="gameCanvas" width="800" height="300"></canvas>
 
     <dialog id="finishdialog">
       <p>今回の勉強時間は<span id="alltimetxt"></span>です！</p>
@@ -126,6 +133,9 @@
     const stopbtn = document.getElementById("stopbtn");
     const time = document.getElementById("time");
     const finishbtn = document.getElementById("finishbtn");
+
+    const gamecanvas = document.getElementById("gameCanvas");
+    const ctx = gamecanvas.getContext("2d");
 
     //ダイアログの要素取得
     const finishdialog = document.getElementById("finishdialog");
@@ -173,8 +183,9 @@
       startTime = Date.now();
       displayTime();
       if (!intervalID) {
-        intervalId = setInterval(snapimg, 10000);
+        intervalId = setInterval(snapimg, 10000);//10秒ごとに画像を送信
       }
+      startGame();
     });
 
     // ストップボタンがクリックされたら時間を止める
@@ -188,6 +199,7 @@
         intervalId = null;
       }
       stopTime += Date.now() - startTime;
+      stopGame();
     });
 
     //終了ボタンがクリックされたら時間を止めてダイアログを表示
@@ -201,6 +213,7 @@
         clearInterval(intervalId);
         intervalId = null;
       }
+      stopGame();
     });
 
     //ハッシュ値を取得
@@ -212,7 +225,7 @@
     allfinishbtn.addEventListener("click", function () {
       const studytime = `${h}:${m}:${s}`; //時間取得
       //ハッシュ値を付けてページを遷移
-      window.location.href = `http://localhost/Hack_U2024_gamelobby.html?studytime=${studytime}&myname=${myname}`;
+      window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelobby.html?studytime=${studytime}&myname=${myname}`;
     });
 
     //戻るボタンがクリックされた時の関数
@@ -242,14 +255,14 @@
         console.error("カメラの起動に失敗しました: ", err);
       });
 
-    // 画像をキャプチャ
-    const canvas = document.getElementById("canvas");
-    const context = canvas.getContext("2d");
+      // 画像をキャプチャ
+      const canvas1 = document.getElementById("canvas1");
+      const context = canvas1.getContext("2d");
 
     //1分ごとに画像を送信する関数
     function snapimg() {
       context.drawImage(video, 0, 0, 320, 240);
-      const dataURL = canvas.toDataURL("image/png"); //dataURLに画像データが代入
+      const dataURL = canvas1.toDataURL("image/png"); //dataURLに画像データが代入
 
       // 画像をサーバーに送信
       fetch("YOUR_SERVER_URL", {
@@ -267,5 +280,155 @@
           console.error("エラー:", error);
         });
     }
+
+    //game
+    const plane = { x: 375, y: 250, width: 50, height: 50 };
+      const bullet = {
+        x: 0,
+        y: 0,
+        width: 10,
+        height: 10,
+        speed: 5,
+        fired: false,
+      };
+      let enemy = { x: 375, y: 50, width: 50, height: 50, health: 100 };
+      let enemyCount = 0;
+
+      let gameInterval;
+      let bulletInterval;
+
+      /*
+      const clouds = [];
+      const cloudSpeed = 2;
+
+      function createCloud() {
+        const x = Math.random() * gamecanvas.width;
+        const y = -50;
+        const width = 50 + Math.random() * 50;
+        const height = 25 + Math.random() * 20;
+        clouds.push({ x, y, width, height });
+      }
+
+      function drawClouds() {
+        ctx.fillStyle = "white";
+        clouds.forEach((cloud) => {
+          ctx.beginPath();
+          ctx.ellipse(
+            cloud.x,
+            cloud.y,
+            cloud.width,
+            cloud.height,
+            Math.PI / 2,
+            0,
+            2 * Math.PI
+          );
+          ctx.fill();
+          cloud.y += cloudSpeed;
+        });
+
+        // 画面外に出た雲を削除
+        for (let i = clouds.length - 1; i >= 0; i--) {
+          if (clouds[i].y > gamecanvas.height) {
+            clouds.splice(i, 1);
+          }
+        }
+      }
+        */
+      
+
+      function drawPlane() {
+        ctx.fillStyle = "blue";
+        // 戦闘機の本体
+        ctx.beginPath();
+        ctx.moveTo(plane.x + plane.width / 2, plane.y);
+        ctx.lineTo(plane.x, plane.y + plane.height);
+        ctx.lineTo(plane.x + plane.width, plane.y + plane.height);
+        ctx.closePath();
+        ctx.fill();
+        // 戦闘機の翼
+        ctx.fillRect(plane.x + 10, plane.y + 20, 30, 10);
+      }
+
+      function drawBullet() {
+        if (bullet.fired) {
+          ctx.fillStyle = "red";
+          ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+          bullet.y -= bullet.speed;
+          if (bullet.y < 0) {
+            bullet.fired = false;
+          }
+        }
+      }
+
+      function drawEnemy() {
+        ctx.fillStyle = "red";
+        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+        ctx.fillStyle = "green";
+        ctx.fillRect(enemy.x, enemy.y - 20, enemy.health / 2, 10);
+      }
+
+      function drawEnemyCount() {
+        ctx.fillStyle = "black";
+        ctx.font = "20px Arial";
+        ctx.fillText(`倒した数: ${enemyCount}`, 10, 30);
+      }
+
+      function checkCollision() {
+        if (
+          bullet.fired &&
+          bullet.x < enemy.x + enemy.width &&
+          bullet.x + bullet.width > enemy.x &&
+          bullet.y < enemy.y + enemy.height &&
+          bullet.y + bullet.height > enemy.y
+        ) {
+          enemy.health -= 10;
+          bullet.fired = false;
+          if (enemy.health <= 0) {
+            enemyCount++;
+            resetEnemy();
+          }
+        }
+      }
+
+      function resetEnemy() {
+        enemy = { x: 375, y: 50, width: 50, height: 50, health: 100 };
+      }
+
+      function fireBullet() {
+        if (!bullet.fired) {
+          bullet.x = plane.x + plane.width / 2 - bullet.width / 2;
+          bullet.y = plane.y;
+          bullet.fired = true;
+        }
+      }
+
+      function startGame() {
+        if (!gameInterval) {
+          gameInterval = setInterval(gameLoop, 1000 / 60);
+          bulletInterval = setInterval(fireBullet, 3000);
+          //setInterval(createCloud, 3000);  3秒ごとに雲を生成
+        }
+      }
+
+      function stopGame() {
+        clearInterval(gameInterval);
+        clearInterval(bulletInterval);
+        gameInterval = null;
+        bulletInterval = null;
+      }
+
+      function gameLoop() {
+        ctx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
+        //drawClouds();
+        drawPlane();
+        drawBullet();
+        drawEnemy();
+        drawEnemyCount();
+        checkCollision();
+      }
+
+    </script>
+  </body>
+</html>
   </script>
 </html>
