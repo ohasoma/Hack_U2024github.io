@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <header>
+    <meta charset="UTF-8" />
+    <title>Hack_U2024ゲームランキング</title>
+
+    <style>
+      body {
+        text-align: center;
+      }
+    </style>
+  </header>
+  <body>
+    <h1>ランキング</h1>
+    <ul id="ranking"></ul>
+    <p><button id="returnbtn">戻る</button></p>
+  </body>
+  <script>
+    const returnbtn = document.getElementById("returnbtn");
+
+    //ハッシュ地を取得
+    const params = new URLSearchParams(window.location.search);
+    const studytime = params.get("studytime");
+    const myname = params.get("myname");
+    const myscore = params.get("score");
+
+    returnbtn.addEventListener("click", returnpage);
+
+    function returnpage() {
+      window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelobby.html?studytime=${studytime}&myname=${myname}&score=${myscore}`;
+    }
+
+    async function displayScoreRanking() {
+      try {
+        // fetch APIを使用してデータを取得
+        const response = await fetch("https://example.com/scores"); //仮
+        const data = await response.json();
+
+        // 自分のデータを追加
+        const myData = { name: `${myname}`, score: `${myscore}` };
+        data.push(myData);
+
+        // スコアでソート
+        data.sort((a, b) => b.score - a.score);
+
+        // ランキングを表示
+        const rankingList = document.getElementById("ranking");
+        rankingList.innerHTML = ""; // 既存の内容をクリア
+
+        data.forEach((friend, index) => {
+          const listItem = document.createElement("li");
+          listItem.textContent = `${index + 1}. ${friend.name}: ${
+            friend.score
+          } 点`;
+          rankingList.appendChild(listItem);
+        });
+      } catch (error) {
+        console.error("データの取得に失敗しました:", error);
+      }
+    }
+
+    // ページが読み込まれたときに関数を実行
+    window.onload = displayScoreRanking;
+    // ページが読み込まれたときに関数を実行
+    window.onload = displayscoreRanking;
+  </script>
+</html>
