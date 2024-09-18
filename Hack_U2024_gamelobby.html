@@ -10,8 +10,8 @@
       }
 
       #startbtn,
-      #todaybtn,
-      #weekbtn {
+      #rankingbtn,
+      #friendbtn {
         position: relative;
         color: white; /* 文字色 */
         text-align: center; /* 文字のアライメント */
@@ -40,8 +40,8 @@
       }
 
       #startbtn,
-      #todaybtn,
-      #weekbtn {
+      #rankingbtn,
+      #friendbtn {
         /*グラデーションの色*/
         background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
         background-size: 600% 600%;
@@ -49,8 +49,8 @@
       }
 
       /*ボタンの大きさ*/
-      #todaybtn,
-      #weekbtn {
+      #rankingbtn,
+      #friendbtn {
         width: 300px; /*横幅*/
         height: 150px; /*高さ*/
       }
@@ -63,31 +63,31 @@
       #startbtn:hover {
         transform: scale(1.03, 1.03);
       }
-      #todaybtn:hover {
+      #rankingbtn:hover {
         transform: scale(1.03, 1.03);
       }
-      #weekbtn:hover {
+      #friendbtn:hover {
         transform: scale(1.03, 1.03);
       }
     </style>
   </head>
   <body>
-    <h1>「ゲーム名」</h1>
+    <h1>study-ranking</h1>
     <p id="username">「ユーザー名」</p>
     <p id="time"></p>
     <div class="gradation">
       <p><button id="startbtn">勉強を始める</button></p>
       <p>
-        <button id="todaybtn">ランキング</button
-        ><button id="weekbtn">今週の実績</button>
+        <button id="friendbtn">フレンド追加</button
+        ><button id="rankingbtn">ランキング</button>
       </p>
     </div>
   </body>
   <script>
     //要素取得
     const startbtn = document.getElementById("startbtn");
-    const todaybtn = document.getElementById("todaybtn");
-    const weekbtn = document.getElementById("weekbtn");
+    const rankingbtn = document.getElementById("rankingbtn");
+    const friendbtn = document.getElementById("friendbtn");
     const username = document.getElementById("username");
     const time = document.getElementById("time");
 
@@ -95,14 +95,27 @@
     const params = new URLSearchParams(window.location.search);
     const studytime = params.get("studytime");
     const myname = params.get("myname");
-    time.innerHTML = studytime;
+    const score = params.get("score");
+    time.innerHTML = `勉強時間-${studytime}　スコア-${score}`;
     username.innerHTML = myname;
 
-    //メイン画面に移動
+    //ゲームメイン画面に移動
     function gamestart() {
-      window.location.href = `http://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamemain.html?studytime=${studytime}&myname=${myname}`; //※仮のページ
+      window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamemain.html?studytime=${studytime}&myname=${myname}&score=${score}`;
+    }
+
+    //フレンド追加画面に移動
+    function addfriend() {
+      window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamefriend.html?studytime=${studytime}&myname=${myname}&score=${score}`;
+    }
+
+    //ランキング画面に移動
+    function ranking() {
+      window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gameranking.html?studytime=${studytime}&myname=${myname}&score=${score}`;
     }
 
     startbtn.addEventListener("click", gamestart);
+    friendbtn.addEventListener("click", addfriend);
+    rankingbtn.addEventListener("click", ranking);
   </script>
 </html>
