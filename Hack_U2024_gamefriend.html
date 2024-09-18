@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hack_U2024フレンド追加</title>
+  </head>
+  <body>
+    <h1>フレンド追加</h1>
+    <p>フレンドに追加したいユーザーのユーザー名を入力してください</p>
+    <input type="text" id="friendname" placeholder="username" />
+    <p>
+      <button id="returnpagebtn">戻る</button>
+      <button id="checkbtn">決定</button>
+    </p>
+
+    <dialog id="checkdialog">
+      <p><span id="name"></span>にフレンド申請を送ります</p>
+      <p>
+        <button id="allcheckbtn">送る</button>　　　<button id="returnbtn">
+          戻る
+        </button>
+      </p>
+    </dialog>
+
+    <dialog id="errordialog">
+      <p id="errormess"></p>
+      <p><button id="errorreturnbtn">戻る</button></p>
+    </dialog>
+  </body>
+  <script>
+    const friendname = document.getElementById("friendname");
+    const returnpagebtn = document.getElementById("returnpagebtn");
+    const checkbtn = document.getElementById("checkbtn");
+
+    //ダイアログの要素取得
+    const checkdialog = document.getElementById("checkdialog");
+    const name = document.getElementById("name");
+    const allcheckbtn = document.getElementById("allcheckbtn");
+    const returnbtn = document.getElementById("returnbtn");
+
+    const errordialog = document.getElementById("errordialog");
+    const errormess = document.getElementById("errormess");
+    const errorreturnbtn = document.getElementById("errorreturnbtn");
+
+    //ハッシュ値を取得
+    const params = new URLSearchParams(window.location.search);
+    const myname = params.get("myname");
+    const studytime = params.get("studytime");
+    const score = params.get("score");
+
+    //クリックイベント
+    returnpagebtn.addEventListener("click", returnpage);
+    checkbtn.addEventListener("click", showdialog);
+    returnbtn.addEventListener("click", closedialog);
+    allcheckbtn.addEventListener("click", allcheck);
+    errorreturnbtn.addEventListener("click", closedialog);
+
+    //ダイアログを開く関数
+    function showdialog() {
+      name.innerHTML = friendname.value;
+      checkdialog.showModal();
+    }
+
+    //ダイアログを閉じる関数
+    function closedialog() {
+      checkdialog.close();
+      errordialog.close();
+    }
+
+    //ロビーに戻る関数
+    function returnpage() {
+      window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelobby.html?studytime=${studytime}&myname=${myname}&score=${score}`;
+    }
+
+    //送るボタンが押された時の関数
+    function allcheck() {
+      closedialog();
+
+      //サーバーに送信
+      fetch("http://api/aaaaaaaaaaaa?name=${myname}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          friendname: friendname.value,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("成功:", data);
+          errordialog.showModal();
+          errormess.innerHTML = "送信に成功しました";
+        })
+        .catch((error) => {
+          console.error("エラー:", error);
+          errordialog.showModal();
+          errormess.innerHTML = "送信に失敗しました";
+        });
+    }
+  </script>
+</html>
