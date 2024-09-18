@@ -3,6 +3,59 @@
   <head>
     <meta charset="UTF-8" />
     <title>Hack_U2024フレンド追加</title>
+        <style>
+      body {
+        text-align: center;
+        font-family: "游ゴシック";
+      }
+
+      h1,
+      #name {
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 600% 600%;
+        animation: gradient 20s ease infinite; /*アニメーションの速さ  infinite=>無限に繰り返す*/
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+      }
+
+      button {
+        /*グラデーションの色*/
+        background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+        background-size: 600% 600%;
+        animation: gradient 20s ease infinite; /*アニメーションの速さ  infinite=>無限に繰り返す*/
+        width: 50px;
+        height: 30px;
+        position: relative;
+        color: white; /* 文字色 */
+        text-align: center; /* 文字のアライメント */
+        text-decoration: none; /* 文字装飾 */
+        display: inline-block; /* ボタンの表示方法 */
+        font-family: "游ゴシック"; /* フォント */
+        margin: 4px 14px; /* 外側の余白 */
+        cursor: pointer; /* カーソル */
+        border: none; /* ボーダーなし */
+        border-radius: 5px; /* ボタンの角丸 */
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3); /* 影 */
+      }
+
+      button:hover {
+        transform: scale(1.1, 1.1);
+      }
+
+      /*フレーム*/
+      @keyframes gradient {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+    </style>
   </head>
   <body>
     <h1>フレンド追加</h1>
@@ -16,7 +69,7 @@
     <dialog id="checkdialog">
       <p><span id="name"></span>にフレンド申請を送ります</p>
       <p>
-        <button id="allcheckbtn">送る</button>　　　<button id="returnbtn">
+        <button id="allcheckbtn">送る</button><button id="returnbtn">
           戻る
         </button>
       </p>
