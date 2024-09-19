@@ -77,39 +77,39 @@
     <h1>study-ranking</h1>
 
     <p>ゲームで使用するユーザー名とパスワードを設定してください</p>
-    <form action="http://api/register" method="post">
-      <div id="write">
-        <p>ユーザー名</p>
-        <input
-          type="text"
-          name="newusername"
-          id="newmynametxt"
-          placeholder="username"
-        />
+    <!--<form action="http://api/register" method="post">-->
+    <div id="write">
+      <p>ユーザー名</p>
+      <input
+        type="text"
+        name="newusername"
+        id="newmynametxt"
+        placeholder="username"
+      />
 
-        <p>パスワード</p>
-        <input
-          type="text"
-          name="newuserpassword"
-          id="newmypasswordtxt"
-          placeholder="Password"
-        />
-      </div>
+      <p>パスワード</p>
+      <input
+        type="text"
+        name="newuserpassword"
+        id="newmypasswordtxt"
+        placeholder="Password"
+      />
+    </div>
 
-      <dialog id="checknewuser">
-        <p>この内容でアカウントを作成します</p>
-        <p id="username"></p>
-        <p id="password"></p>
+    <dialog id="checknewuser">
+      <p>この内容でアカウントを作成します</p>
+      <p id="username"></p>
+      <p id="password"></p>
 
-        <p>
-          <button type="submit" id="checkbtn">作成</button>　　　<button
-            id="returnbtn"
-          >
-            戻る
-          </button>
-        </p>
-      </dialog>
-    </form>
+      <p>
+        <button type="submit" id="checkbtn">作成</button>　　　<button
+          id="returnbtn"
+        >
+          戻る
+        </button>
+      </p>
+    </dialog>
+    <!--</form>-->
     <p>
       <button id="okbtn">決定</button>
     </p>
@@ -142,30 +142,35 @@
       }
     }
 
-    //ゲーム画面に飛ぶ関数
-    function allcheck() {
-      location.href = "http://localhost/Hack_U2024_gamelobby.html"; //※このページは仮
-    }
-
     //ダイアログを閉じる関数
     function closedialog() {
       checknewuser.close();
-      location.assign(`http://localhost/Hack_U2024_gamelobby.html#${username}`);
     }
 
     //クリックイベント
     okbtn.addEventListener("click", showdialog);
-    checkbtn.addEventListener("click", closedialog);
+    checkbtn.addEventListener("click", post);
     returnbtn.addEventListener("click", closedialog);
 
-    /*http通信
+    //http通信
     function post() {
+      //ダイアログを閉じる
       checknewuser.close();
-      let body = newmyname.value + newmypassword.value;
 
+      //ページ遷移
+      location.href =
+        "https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelogin.html"; //ログイン画面
+
+      //ユーザー情報をポスト
       fetch("http://api/register", {
         method: "POST",
-        body: body,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: newmyname.value,
+          password: newmypassword.value,
+        }),
       })
         .then((response) => {
           if (!response.ok) {
@@ -180,6 +185,6 @@
         .catch((error) => {
           console.log(error);
         });
-    }*/
+    }
   </script>
 </html>
