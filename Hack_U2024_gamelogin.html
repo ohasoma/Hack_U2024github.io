@@ -36,7 +36,7 @@
     </style>
   </head>
   <body>
-    <h1>study-ranking</h1>
+    <h1>「ゲーム名」</h1>
 
     <!--<form action="http://api/account" method="get">-->
     <p>ユーザー名とパスワードを入力してください</p>
@@ -51,8 +51,9 @@
       id="mypasswordtxt"
       placeholder="password"
     />
-    <p><button type="submit" id="mypasswordbtn">認証</button></p>
+    <p><button type="submit" id="allcheckbtn">認証</button></p>
     <!--</form>-->
+    <p id="errormess"></p>
 
     <p><button id="newbtn">初めての方はこちら</button></p>
   </body>
@@ -60,23 +61,55 @@
     //要素取得
     const mynametxt = document.getElementById("mynametxt");
     const mypassword = document.getElementById("mypasswordtxt");
-    const mypasswordbtn = document.getElementById("mypasswordbtn");
+    const allcheckbtn = document.getElementById("allcheckbtn");
     const newbtn = document.getElementById("newbtn");
+    const errormess = document.getElementById("errormess");
+    const myname = mynametxt.value;
 
-    //ゲーム画面に飛ぶ関数
-    function checkpassword() {
-      const myname = mynametxt.value;
-      window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelobby.html?myname=${myname}`;
+    function getdata() {
+      //サーバーからユーザーデータを取得する
+
+      fetch("http://api/aaaaaaaaaaaa?name=${myname}")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("ネットワーク応答が正常ではありません");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const studytime = data.studytime;
+          const score = data.score;
+
+          window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelobby.html?myname=${myname}&studytime=${studytime}&score=${score}`;
+        });
+    }
+
+    function checkuser() {
+      fetch("http://api/aaaaaaaaaaaaaaaaaaaa?name{myname}")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("ネットワーク応答が正常ではありません");
+            errormess.innerHTML = "ネットワーク応答が正常ではありません";
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.password == mypassword) {
+            getdata();
+          } else {
+            errormess.innerHTML = "ユーザー名またはパスワードが違います";
+          }
+        });
     }
 
     //新規ユーザーのページに飛ぶ関数
     function newuser() {
       location.href =
-        "https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gameRegistration.html"; //※仮のページ
+        "https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gameRegistration.html"; //新規登録ページ
     }
 
     //クリックイベント
-    mypasswordbtn.addEventListener("click", checkpassword);
+    allcheckbtn.addEventListener("click", checkuser);
     newbtn.addEventListener("click", newuser);
   </script>
 </html>
