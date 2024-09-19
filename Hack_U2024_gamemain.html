@@ -98,7 +98,7 @@
       }
       
       #gameCanvas {
-        background: #87ceeb; /* 空の色 */
+        background: #4a787e92
         display: block;
         margin: 0 auto;
       }
@@ -372,12 +372,12 @@
         ctx.closePath();
         ctx.fill();
         // 戦闘機の翼
-        ctx.fillRect(plane.x + 10, plane.y + 20, 30, 10);
+        //ctx.fillRect(plane.x + 10, plane.y + 20, 30, 10);
       }
 
       function drawBullet() {
         if (bullet.fired) {
-          ctx.fillStyle = "red";
+          ctx.fillStyle = "yellow";
           ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
           bullet.y -= bullet.speed;
           if (bullet.y < 0) {
@@ -387,9 +387,9 @@
       }
 
       function drawEnemy() {
-        ctx.fillStyle = "red";
+        ctx.fillStyle = "purple";
         ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-        ctx.fillStyle = "green";
+        ctx.fillStyle = "red";
         ctx.fillRect(enemy.x, enemy.y - 20, enemy.health / 2, 10);
       }
 
@@ -455,7 +455,7 @@
 
       function aaa(){
       const aaa = document.getElementById("aaa");
-      aaa.innerHTML= `破壊したクリスタルの数は${enemyCount}個です！`;}
+      aaa.innerHTML= `倒した数は${enemyCount}体です！`;}
 
 
     </script>
