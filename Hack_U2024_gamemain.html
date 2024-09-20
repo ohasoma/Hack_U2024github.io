@@ -177,7 +177,7 @@
       }
     };
 
-    // スタートボタンがクリックされたら時間を進める
+  // スタートボタンがクリックされたら時間を進める
     let intervalID;
     startbtn.addEventListener("click", () => {
       startbtn.disabled = true;
@@ -186,7 +186,7 @@
       startTime = Date.now();
       displayTime();
       if (!intervalID) {
-        intervalId = setInterval(snapimg, 10000);//10秒ごとに画像を送信
+        intervalId = setInterval(snapimg, 10000); //10秒ごとに画像を送信
       }
       startGame();
     });
@@ -229,20 +229,21 @@
     //勉強を終わるボタンがクリックされた時の関数
     allfinishbtn.addEventListener("click", function () {
       studytime = `${h}:${m}:${s}`; //時間取得
-      score = score + enemyCount;
+      score = score + enemyCount; //倒した数
+
       //ハッシュ値を付けてページを遷移
       window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelobby.html?studytime=${studytime}&myname=${myname}&score=${score}`;
-      
+
       //サーバーに送信
-      fetch("http://api/aaaaaaaaaaaa?name=${myname}", {
+      fetch(`http://api/score?userName=${myname}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          studytime:studytime,
-          score:score
-         }),
+        body: JSON.stringify({
+          //studytime: studytime.value,
+          score: score,
+        }),
       })
         .then((response) => response.json())
         .then((data) => {
@@ -252,7 +253,6 @@
           console.error("エラー:", error);
         });
     });
-    
 
     //戻るボタンがクリックされた時の関数
     returnbtn.addEventListener("click", closedialog);
@@ -281,185 +281,159 @@
         console.error("カメラの起動に失敗しました: ", err);
       });
 
-      // 画像をキャプチャ
-      const canvas1 = document.getElementById("canvas1");
-      const context = canvas1.getContext("2d");
+    // 画像をキャプチャ
+    const canvas1 = document.getElementById("canvas1");
+    const context = canvas1.getContext("2d");
 
-    //1分ごとに画像を送信する関数
-    function snapimg() {
+    //画像を送信する関数
+    async function snapimg() {
+      //画像取得
       context.drawImage(video, 0, 0, 320, 240);
       const dataURL = canvas1.toDataURL("image/png"); //dataURLに画像データが代入
 
-      // 画像をサーバーに送信
-      fetch("YOUR_SERVER_URL", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ image: dataURL }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("成功:", data);
-        })
-        .catch((error) => {
-          console.error("エラー:", error);
+      //サーバーに送信
+      try {
+        const response = await fetch("https://api/picture", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            getPicture: dataURL,
+          }),
         });
+        const data = await response.json();
+
+        if (data.message === "awake") {
+          startGame();
+          startTime = Date.now();
+          displayTime(); // 起きてる時の関数
+        } else if (data.message === "asleep") {
+          stopGame(); // 寝てる時の関数
+          clearTimeout(timeoutID);
+          if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+          }
+          stopTime += Date.now() - startTime;
+        } else {
+          console.error("予期しないレスポンス:", data);
+        }
+      } catch (error) {
+        console.error("Fetchエラー:", error);
+        errormess.innerHTML = "ネットワークエラー"; // ネットワークエラーなどの例外時も失敗とみなす
+      }
     }
 
     //game
-    const plane = { x: 375, y: 250, width: 50, height: 50 };
-      const bullet = {
-        x: 0,
-        y: 0,
-        width: 10,
-        height: 10,
-        speed: 5,
-        fired: false,
-      };
-      let enemy = { x: 375, y: 50, width: 50, height: 50, health: 100 };
-      let enemyCount = 0;
+    const plane = { x: 375, y: 225, width: 50, height: 50 };
+    const bullet = {
+      x: 0,
+      y: 0,
+      width: 10,
+      height: 10,
+      speed: 5,
+      fired: false,
+    };
+    let enemy = { x: 375, y: 50, width: 50, height: 50, health: 100 };
+    let enemyCount = 0;
 
-      let gameInterval;
-      let bulletInterval;
+    let gameInterval;
+    let bulletInterval;
 
-      /*
-      const clouds = [];
-      const cloudSpeed = 2;
+    function drawPlane() {
+      ctx.fillStyle = "blue";
+      // 戦闘機の本体
+      ctx.beginPath();
+      ctx.moveTo(plane.x + plane.width / 2, plane.y);
+      ctx.lineTo(plane.x, plane.y + plane.height);
+      ctx.lineTo(plane.x + plane.width, plane.y + plane.height);
+      ctx.closePath();
+      ctx.fill();
+      // 戦闘機の翼
+      //ctx.fillRect(plane.x + 10, plane.y + 20, 30, 10);
+    }
 
-      function createCloud() {
-        const x = Math.random() * gamecanvas.width;
-        const y = -50;
-        const width = 50 + Math.random() * 50;
-        const height = 25 + Math.random() * 20;
-        clouds.push({ x, y, width, height });
-      }
-
-      function drawClouds() {
-        ctx.fillStyle = "white";
-        clouds.forEach((cloud) => {
-          ctx.beginPath();
-          ctx.ellipse(
-            cloud.x,
-            cloud.y,
-            cloud.width,
-            cloud.height,
-            Math.PI / 2,
-            0,
-            2 * Math.PI
-          );
-          ctx.fill();
-          cloud.y += cloudSpeed;
-        });
-
-        // 画面外に出た雲を削除
-        for (let i = clouds.length - 1; i >= 0; i--) {
-          if (clouds[i].y > gamecanvas.height) {
-            clouds.splice(i, 1);
-          }
-        }
-      }
-        */
-      
-
-      function drawPlane() {
-        ctx.fillStyle = "blue";
-        // 戦闘機の本体
-        ctx.beginPath();
-        ctx.moveTo(plane.x + plane.width / 2, plane.y);
-        ctx.lineTo(plane.x, plane.y + plane.height);
-        ctx.lineTo(plane.x + plane.width, plane.y + plane.height);
-        ctx.closePath();
-        ctx.fill();
-        // 戦闘機の翼
-        //ctx.fillRect(plane.x + 10, plane.y + 20, 30, 10);
-      }
-
-      function drawBullet() {
-        if (bullet.fired) {
-          ctx.fillStyle = "yellow";
-          ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
-          bullet.y -= bullet.speed;
-          if (bullet.y < 0) {
-            bullet.fired = false;
-          }
-        }
-      }
-
-      function drawEnemy() {
-        ctx.fillStyle = "purple";
-        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-        ctx.fillStyle = "red";
-        ctx.fillRect(enemy.x, enemy.y - 20, enemy.health / 2, 10);
-      }
-
-      function drawEnemyCount() {
-        ctx.fillStyle = "black";
-        ctx.font = "20px Arial";
-        ctx.fillText(`破壊した数: ${enemyCount}`, 10, 30);
-      }
-
-      function checkCollision() {
-        if (
-          bullet.fired &&
-          bullet.x < enemy.x + enemy.width &&
-          bullet.x + bullet.width > enemy.x &&
-          bullet.y < enemy.y + enemy.height &&
-          bullet.y + bullet.height > enemy.y
-        ) {
-          enemy.health -= 10;
+    function drawBullet() {
+      if (bullet.fired) {
+        ctx.fillStyle = "yellow";
+        ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+        bullet.y -= bullet.speed;
+        if (bullet.y < 0) {
           bullet.fired = false;
-          if (enemy.health <= 0) {
-            enemyCount++;
-            resetEnemy();
-          }
         }
       }
+    }
 
-      function resetEnemy() {
-        enemy = { x: 375, y: 50, width: 50, height: 50, health: 100 };
-      }
+    function drawEnemy() {
+      ctx.fillStyle = "purple";
+      ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+      ctx.fillStyle = "red";
+      ctx.fillRect(enemy.x, enemy.y - 20, enemy.health / 2, 10);
+    }
 
-      function fireBullet() {
-        if (!bullet.fired) {
-          bullet.x = plane.x + plane.width / 2 - bullet.width / 2;
-          bullet.y = plane.y;
-          bullet.fired = true;
+    function drawEnemyCount() {
+      ctx.fillStyle = "black";
+      ctx.font = "20px Arial";
+      ctx.fillText(`倒した数: ${enemyCount}`, 10, 30);
+    }
+
+    function checkCollision() {
+      if (
+        bullet.fired &&
+        bullet.x < enemy.x + enemy.width &&
+        bullet.x + bullet.width > enemy.x &&
+        bullet.y < enemy.y + enemy.height &&
+        bullet.y + bullet.height > enemy.y
+      ) {
+        enemy.health -= 10;
+        bullet.fired = false;
+        if (enemy.health <= 0) {
+          enemyCount++;
+          resetEnemy();
         }
       }
+    }
 
-      function startGame() {
-        if (!gameInterval) {
-          gameInterval = setInterval(gameLoop, 1000 / 60);
-          bulletInterval = setInterval(fireBullet, 3000);
-          //setInterval(createCloud, 3000);  3秒ごとに雲を生成
-        }
+    function resetEnemy() {
+      enemy = { x: 375, y: 50, width: 50, height: 50, health: 100 };
+    }
+
+    function fireBullet() {
+      if (!bullet.fired) {
+        bullet.x = plane.x + plane.width / 2 - bullet.width / 2;
+        bullet.y = plane.y;
+        bullet.fired = true;
       }
+    }
 
-      function stopGame() {
-        clearInterval(gameInterval);
-        clearInterval(bulletInterval);
-        gameInterval = null;
-        bulletInterval = null;
+    function startGame() {
+      if (!gameInterval) {
+        gameInterval = setInterval(gameLoop, 1000 / 60);
+        bulletInterval = setInterval(fireBullet, 3000);
       }
+    }
 
-      function gameLoop() {
-        ctx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
-        //drawClouds();
-        drawPlane();
-        drawBullet();
-        drawEnemy();
-        drawEnemyCount();
-        checkCollision();
-      }
+    function stopGame() {
+      clearInterval(gameInterval);
+      clearInterval(bulletInterval);
+      gameInterval = null;
+      bulletInterval = null;
+    }
 
-      function aaa(){
+    function gameLoop() {
+      ctx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
+      drawPlane();
+      drawBullet();
+      drawEnemy();
+      drawEnemyCount();
+      checkCollision();
+    }
+
+    function aaa() {
       const aaa = document.getElementById("aaa");
-      aaa.innerHTML= `倒した数は${enemyCount}体です！`;}
-
-
-    </script>
-  </body>
-</html>
+      aaa.innerHTML = `倒した数は${enemyCount}体です！`;
+    }
   </script>
 </html>
+
