@@ -116,7 +116,7 @@
     //ユーザー名とパスワードを送る
     async function checkuser() {
       try {
-        const response = await fetch("http://localhost/api/Login", {
+        const response = await fetch("http://localhost:8080/api/Login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
