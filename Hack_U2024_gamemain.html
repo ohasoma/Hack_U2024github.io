@@ -228,7 +228,7 @@
     //勉強を終わるボタンがクリックされた時の関数
     allfinishbtn.addEventListener("click", async function () {
       studytime = `${h}:${m}:${s}`; //時間取得
-      score = score + enemyCount; //倒した数
+      score = enemyCount; //倒した数
 
       //ハッシュ値を付けてページを遷移
       window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelobby.html?studytime=${studytime}&myname=${myname}&score=${score}&myid=${myid}`;
