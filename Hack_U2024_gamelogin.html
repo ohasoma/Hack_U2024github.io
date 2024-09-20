@@ -91,7 +91,8 @@
         const myname = data.userDataName;
         const studytime = data.userDataStudyTime;
         const score = data.userDataScore;
-        window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelobby.html?name=${myname}&studytime=${studytime}&score=${score}`;
+        const myid = data.userDataID;
+        window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelobby.html?name=${myname}&studytime=${studytime}&score=${score}&myid=${myid}`;
       } catch (error) {
         console.error("Fetchエラー:", error);
       }
