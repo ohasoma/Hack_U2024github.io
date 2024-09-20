@@ -74,7 +74,7 @@
     async function displayScoreRanking() {
       try {
         // fetch APIを使用してデータを取得
-        const response = await fetch("http://localhost/api/getfriendscore"); //仮
+        const response = await fetch("http://localhost:8080/api/getfriendscore"); //仮
         const data = await response.json();
 
         // 自分のデータを追加
