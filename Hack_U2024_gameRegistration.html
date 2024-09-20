@@ -157,10 +157,6 @@
       //ダイアログを閉じる
       checknewuser.close();
 
-      //ページ遷移
-      location.href =
-        "https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelogin.html"; //ログイン画面
-
       //ユーザー情報をポスト
       fetch("http://api/register", {
         method: "POST",
@@ -168,8 +164,8 @@
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: newmyname.value,
-          password: newmypassword.value,
+          userName: newmyname.value,
+          userPassword: newmypassword.value,
         }),
       })
         .then((response) => {
@@ -185,6 +181,9 @@
         .catch((error) => {
           console.log(error);
         });
+      //ページ遷移
+      location.href =
+        "https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelogin.html"; //ログイン画面
     }
   </script>
 </html>
