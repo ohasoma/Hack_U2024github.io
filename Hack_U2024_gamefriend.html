@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <title>Hack_U2024フレンド追加</title>
-        <style>
+
+    <style>
       body {
         text-align: center;
         font-family: "游ゴシック";
@@ -59,8 +60,8 @@
   </head>
   <body>
     <h1>フレンド追加</h1>
-    <p>フレンドに追加したいユーザーのユーザー名を入力してください</p>
-    <input type="text" id="friendname" placeholder="username" />
+    <p>フレンドに追加したいユーザーのユーザーIDを入力してください</p>
+    <input type="text" id="friendid" placeholder="userID" />
     <p>
       <button id="returnpagebtn">戻る</button>
       <button id="checkbtn">決定</button>
@@ -69,9 +70,8 @@
     <dialog id="checkdialog">
       <p><span id="name"></span>にフレンド申請を送ります</p>
       <p>
-        <button id="allcheckbtn">送る</button><button id="returnbtn">
-          戻る
-        </button>
+        <button id="allcheckbtn">送る</button
+        ><button id="returnbtn">戻る</button>
       </p>
     </dialog>
 
@@ -81,7 +81,7 @@
     </dialog>
   </body>
   <script>
-    const friendname = document.getElementById("friendname");
+    const friendid = document.getElementById("friendid");
     const returnpagebtn = document.getElementById("returnpagebtn");
     const checkbtn = document.getElementById("checkbtn");
 
@@ -100,6 +100,7 @@
     const myname = params.get("myname");
     const studytime = params.get("studytime");
     const score = params.get("score");
+    const myid = params.get("myid");
 
     //クリックイベント
     returnpagebtn.addEventListener("click", returnpage);
@@ -110,7 +111,7 @@
 
     //ダイアログを開く関数
     function showdialog() {
-      name.innerHTML = friendname.value;
+      name.innerHTML = friendid.value;
       checkdialog.showModal();
     }
 
@@ -122,34 +123,41 @@
 
     //ロビーに戻る関数
     function returnpage() {
-      window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelobby.html?studytime=${studytime}&myname=${myname}&score=${score}`;
+      window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelobby.html?studytime=${studytime}&myname=${myname}&score=${score}&myid=${myid}`;
     }
 
     //送るボタンが押された時の関数
-    function allcheck() {
+    async function allcheck() {
       closedialog();
 
+      document.cookie = "sessionId=value";
+
       //サーバーに送信
-      fetch("http://api/aaaaaaaaaaaa?name=${myname}", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          friendname: friendname.value,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("成功:", data);
+      try {
+        const response = await fetch("http://localhost/api/registerfriend", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            friendID: friendid.value,
+          }),
+        });
+        const data = await response.json();
+        if (data.message === "friend registerd") {
           errordialog.showModal();
-          errormess.innerHTML = "送信に成功しました";
-        })
-        .catch((error) => {
-          console.error("エラー:", error);
+          errormess.innerHTML = "送信に成功しました"; // ログイン成功時の関数
+        } else {
           errordialog.showModal();
           errormess.innerHTML = "送信に失敗しました";
-        });
+          console.error("予期しないレスポンス:", data);
+        }
+      } catch (error) {
+        console.error("Fetchエラー:", error);
+        errordialog.showModal();
+        errormess.innerHTML = "ネットワークエラーが発生しました"; // ネットワークエラーなどの例外時も失敗とみなす
+      }
     }
   </script>
 </html>
