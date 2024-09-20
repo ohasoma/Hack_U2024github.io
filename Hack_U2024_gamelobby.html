@@ -105,8 +105,9 @@
     const studytime = params.get("studytime");
     const myname = params.get("myname");
     const score = params.get("score");
+    const myid = params.get("myid");
     time.innerHTML = `勉強時間-${studytime}　スコア-${score}体`;
-    username.innerHTML = myname;
+    username.innerHTML = `${myname}(ID:${myid})`;
 
     //ゲームメイン画面に移動
     function gamestart() {
