@@ -75,7 +75,7 @@
         const sessionId = getCookie("sessionId"); // 'sessionId'という名前のCookieを取得
 
         // リクエストヘッダーにCookieを含める
-        const response = await fetch(`https://api:/getdata`, {
+        const response = await fetch(`https://localhost:8080/api/getdata`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
