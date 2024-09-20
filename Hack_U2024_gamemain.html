@@ -112,8 +112,6 @@
     </p>
     <p id="time">00:00:00</p>
 
-
-
     <!--AIに聞いたやつ-->
     <video id="video" width="320" height="240" autoplay></video>
     <canvas id="canvas1" width="320" height="240"></canvas>
@@ -177,7 +175,7 @@
       }
     };
 
-  // スタートボタンがクリックされたら時間を進める
+    // スタートボタンがクリックされたら時間を進める
     let intervalID;
     startbtn.addEventListener("click", () => {
       startbtn.disabled = true;
@@ -225,33 +223,39 @@
     const myname = params.get("myname");
     let studytime = params.get("studytime");
     let score = params.get("score");
+    const myid = params.get("myid");
 
     //勉強を終わるボタンがクリックされた時の関数
-    allfinishbtn.addEventListener("click", function () {
+    allfinishbtn.addEventListener("click", async function () {
       studytime = `${h}:${m}:${s}`; //時間取得
       score = score + enemyCount; //倒した数
 
       //ハッシュ値を付けてページを遷移
-      window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelobby.html?studytime=${studytime}&myname=${myname}&score=${score}`;
+      window.location.href = `https://ohasoma.github.io/Hack_U2024github.io/Hack_U2024_gamelobby.html?studytime=${studytime}&myname=${myname}&score=${score}&myid=${myid}`;
+
+      //cookieを設定
+      document.cookie = "sessionId=value";
 
       //サーバーに送信
-      fetch(`http://api/score?userName=${myname}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          //studytime: studytime.value,
-          score: score,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("成功:", data);
-        })
-        .catch((error) => {
-          console.error("エラー:", error);
+      try {
+        const response = await fetch(`http://localhost/api/score`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            //studytime: studytime.value,
+            score: score,
+          }),
         });
+        const data = await response.json();
+        if (data === response.ok) {
+          console.log("成功");
+        }
+      } catch (error) {
+        console.error("エラー:", error);
+      }
     });
 
     //戻るボタンがクリックされた時の関数
@@ -293,7 +297,7 @@
 
       //サーバーに送信
       try {
-        const response = await fetch("https://api/picture", {
+        const response = await fetch("http://localhost/api/picture", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
